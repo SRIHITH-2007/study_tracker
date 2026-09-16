@@ -23,8 +23,47 @@ class StudyTrackerApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final TextEditingController taskController = TextEditingController();
+
+  void showAddTaskDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add New Task'),
+          content: TextField(
+            controller: taskController,
+            decoration: const InputDecoration(
+              hintText: 'Enter your task',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +75,6 @@ class HomePage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: false,
       ),
 
       body: SingleChildScrollView(
@@ -44,8 +82,6 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-            // Greeting
             const Text(
               'Good Evening 👋',
               style: TextStyle(
@@ -66,7 +102,6 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // Progress Card
             Card(
               elevation: 2,
               child: Padding(
@@ -74,7 +109,6 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     const Text(
                       "Today's Progress",
                       style: TextStyle(
@@ -109,7 +143,6 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // Tasks heading
             const Text(
               "Today's Tasks",
               style: TextStyle(
@@ -120,7 +153,6 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Task 1
             Card(
               child: ListTile(
                 leading: const Icon(Icons.check_box_outline_blank),
@@ -129,7 +161,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Task 2
             Card(
               child: ListTile(
                 leading: const Icon(Icons.check_box_outline_blank),
@@ -138,7 +169,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Task 3
             Card(
               child: ListTile(
                 leading: const Icon(Icons.check_box_outline_blank),
@@ -150,9 +180,8 @@ class HomePage extends StatelessWidget {
         ),
       ),
 
-      // Add button
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: showAddTaskDialog,
         child: const Icon(Icons.add),
       ),
     );
