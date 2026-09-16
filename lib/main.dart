@@ -35,6 +35,11 @@ class _HomePageState extends State<HomePage> {
 
   String newTask = '';
 
+  bool dbmsCompleted = false;
+  bool daaCompleted = false;
+  bool networksCompleted = false;
+  bool newTaskCompleted = false;
+
   void showAddTaskDialog() {
     taskController.clear();
 
@@ -163,7 +168,14 @@ class _HomePageState extends State<HomePage> {
 
             Card(
               child: ListTile(
-                leading: const Icon(Icons.check_box_outline_blank),
+                leading: Checkbox(
+                  value: dbmsCompleted,
+                  onChanged: (value) {
+                    setState(() {
+                      dbmsCompleted = value!;
+                    });
+                  },
+                ),
                 title: const Text('DBMS - Chapter 3'),
                 subtitle: const Text('Database Management Systems'),
               ),
@@ -171,7 +183,14 @@ class _HomePageState extends State<HomePage> {
 
             Card(
               child: ListTile(
-                leading: const Icon(Icons.check_box_outline_blank),
+                leading: Checkbox(
+                  value: daaCompleted,
+                  onChanged: (value) {
+                    setState(() {
+                      daaCompleted = value!;
+                    });
+                  },
+                ),
                 title: const Text('DAA - AVL Trees'),
                 subtitle: const Text('Design and Analysis of Algorithms'),
               ),
@@ -179,7 +198,14 @@ class _HomePageState extends State<HomePage> {
 
             Card(
               child: ListTile(
-                leading: const Icon(Icons.check_box_outline_blank),
+                leading: Checkbox(
+                  value: networksCompleted,
+                  onChanged: (value) {
+                    setState(() {
+                      networksCompleted = value!;
+                    });
+                  },
+                ),
                 title: const Text('Computer Networks'),
                 subtitle: const Text('Revise TCP and UDP'),
               ),
@@ -188,7 +214,14 @@ class _HomePageState extends State<HomePage> {
             if (newTask.isNotEmpty)
               Card(
                 child: ListTile(
-                  leading: const Icon(Icons.check_box_outline_blank),
+                  leading: Checkbox(
+                    value: newTaskCompleted,
+                    onChanged: (value) {
+                      setState(() {
+                        newTaskCompleted = value!;
+                      });
+                    },
+                  ),
                   title: Text(newTask),
                 ),
               ),
