@@ -40,6 +40,20 @@ class _HomePageState extends State<HomePage> {
   bool networksCompleted = false;
   bool newTaskCompleted = false;
 
+  double get progress {
+    int completed = 0;
+
+    if (dbmsCompleted) completed++;
+    if (daaCompleted) completed++;
+    if (networksCompleted) completed++;
+
+    return completed / 3;
+  }
+
+  int get progressPercentage {
+    return (progress * 100).round();
+  }
+
   void showAddTaskDialog() {
     taskController.clear();
 
@@ -132,10 +146,10 @@ class _HomePageState extends State<HomePage> {
 
                     const SizedBox(height: 20),
 
-                    const Center(
+                    Center(
                       child: Text(
-                        '0%',
-                        style: TextStyle(
+                        '$progressPercentage%',
+                        style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                         ),
@@ -145,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 15),
 
                     LinearProgressIndicator(
-                      value: 0,
+                      value: progress,
                       minHeight: 10,
                       borderRadius: BorderRadius.circular(10),
                     ),
