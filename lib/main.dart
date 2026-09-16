@@ -33,7 +33,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController taskController = TextEditingController();
 
+  String newTask = '';
+
   void showAddTaskDialog() {
+    taskController.clear();
+
     showDialog(
       context: context,
       builder: (context) {
@@ -55,6 +59,10 @@ class _HomePageState extends State<HomePage> {
             ),
             ElevatedButton(
               onPressed: () {
+                setState(() {
+                  newTask = taskController.text;
+                });
+
                 Navigator.pop(context);
               },
               child: const Text('Add'),
@@ -176,6 +184,14 @@ class _HomePageState extends State<HomePage> {
                 subtitle: const Text('Revise TCP and UDP'),
               ),
             ),
+
+            if (newTask.isNotEmpty)
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.check_box_outline_blank),
+                  title: Text(newTask),
+                ),
+              ),
           ],
         ),
       ),
