@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
+import '../data/task_data.dart';
 
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final int totalTasks = TaskData.tasks.length;
+
+    final int completedTasks =
+        TaskData.tasks.where((task) => task.completed).length;
+
+    final int pendingTasks = totalTasks - completedTasks;
+
+    final int progressPercentage = totalTasks == 0
+        ? 0
+        : ((completedTasks / totalTasks) * 100).round();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -14,8 +26,7 @@ class StatisticsScreen extends StatelessWidget {
           ),
         ),
       ),
-
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,17 +58,20 @@ class StatisticsScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
-                        children: const [
-                          Icon(Icons.task_alt, size: 35),
-                          SizedBox(height: 10),
+                        children: [
+                          const Icon(
+                            Icons.task_alt,
+                            size: 35,
+                          ),
+                          const SizedBox(height: 10),
                           Text(
-                            '3',
-                            style: TextStyle(
+                            '$totalTasks',
+                            style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text('Total Tasks'),
+                          const Text('Total Tasks'),
                         ],
                       ),
                     ),
@@ -71,17 +85,20 @@ class StatisticsScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
-                        children: const [
-                          Icon(Icons.done_all, size: 35),
-                          SizedBox(height: 10),
+                        children: [
+                          const Icon(
+                            Icons.done_all,
+                            size: 35,
+                          ),
+                          const SizedBox(height: 10),
                           Text(
-                            '0',
-                            style: TextStyle(
+                            '$completedTasks',
+                            style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text('Completed'),
+                          const Text('Completed'),
                         ],
                       ),
                     ),
@@ -90,7 +107,65 @@ class StatisticsScreen extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 15),
+
+            Row(
+              children: [
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.pending_actions,
+                            size: 35,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            '$pendingTasks',
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Text('Pending'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 15),
+
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.percent,
+                            size: 35,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            '$progressPercentage%',
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Text('Progress'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 30),
 
             const Text(
               'Study Overview',
@@ -102,32 +177,38 @@ class StatisticsScreen extends StatelessWidget {
 
             const SizedBox(height: 15),
 
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.menu_book),
-                title: const Text('DBMS'),
-                subtitle: const Text('Chapter 3'),
-                trailing: const Text('Pending'),
+            if (TaskData.tasks.isEmpty)
+              const Card(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(
+                    child: Text('No tasks available'),
+                  ),
+                ),
+              )
+            else
+              ...TaskData.tasks.map(
+                (task) {
+                  return Card(
+                    child: ListTile(
+                      leading: Icon(
+                        task.completed
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                      ),
+                      title: Text(
+                        task.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      trailing: Text(
+                        task.completed ? 'Completed' : 'Pending',
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
-
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.account_tree),
-                title: const Text('DAA'),
-                subtitle: const Text('AVL Trees'),
-                trailing: const Text('Pending'),
-              ),
-            ),
-
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.computer),
-                title: const Text('Computer Networks'),
-                subtitle: const Text('TCP and UDP'),
-                trailing: const Text('Pending'),
-              ),
-            ),
           ],
         ),
       ),
