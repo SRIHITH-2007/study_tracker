@@ -54,6 +54,16 @@ class _HomePageState extends State<HomePage> {
     return (progress * 100).round();
   }
 
+  int get completedTasks {
+    int completed = 0;
+
+    if (dbmsCompleted) completed++;
+    if (daaCompleted) completed++;
+    if (networksCompleted) completed++;
+
+    return completed;
+  }
+
   void showAddTaskDialog() {
     taskController.clear();
 
@@ -152,6 +162,18 @@ class _HomePageState extends State<HomePage> {
                         style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Center(
+                      child: Text(
+                        'Completed: $completedTasks of 3 tasks',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
                         ),
                       ),
                     ),
