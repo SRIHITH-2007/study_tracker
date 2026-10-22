@@ -122,22 +122,22 @@ These tests cover selected task-management operations, navigation behavior, JSON
 ## 📸 Screenshots
 
 ### Welcome Screen
-![Welcome Screen](screenshots/welcome_screen.png)
+![Welcome Screen](screenshots/welcome_screen.png.png)
 
 ### Home Screen
-![Home Screen](screenshots/home_screen.png)
+![Home Screen](screenshots/home_screen.png.png)
 
 ### Task Management
-![Task Management](screenshots/tasks_screen.png)
+![Task Management](screenshots/tasks_screen.png.png)
 
 ### Statistics Dashboard
-![Statistics Dashboard](screenshots/statistics_screen.png)
+![Statistics Dashboard](screenshots/statistics_screen.png.png)
 
 ### Study Tips
-![Study Tips](screenshots/study_tips_screen.png)
+![Study Tips](screenshots/study_tips_screen.png.png)
 
 ### Task Form Validation
-![Task Form Validation](screenshots/task_validation.png)
+![Task Form Validation](screenshots/task_validation.png.png)
 
 ## 📂 Project Structure
 
