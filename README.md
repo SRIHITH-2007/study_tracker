@@ -121,22 +121,23 @@ These tests cover selected task-management operations, navigation behavior, JSON
 
 ## 📸 Screenshots
 
-Screenshots of the application can be added to the `screenshots/` directory.
-
-Suggested screenshots:
-
-1. Welcome screen
-2. Home screen
-3. Task management screen
-4. Statistics dashboard
-5. Study Tips screen
-6. Task form validation
-
-Once screenshots are saved in that directory, they can be displayed here using Markdown image links. For example:
-
-```markdown
+### Welcome Screen
 ![Welcome Screen](screenshots/welcome_screen.png)
-```
+
+### Home Screen
+![Home Screen](screenshots/home_screen.png)
+
+### Task Management
+![Task Management](screenshots/tasks_screen.png)
+
+### Statistics Dashboard
+![Statistics Dashboard](screenshots/statistics_screen.png)
+
+### Study Tips
+![Study Tips](screenshots/study_tips_screen.png)
+
+### Task Form Validation
+![Task Form Validation](screenshots/task_validation.png)
 
 ## 📂 Project Structure
 
