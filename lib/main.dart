@@ -1,8 +1,12 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/task_provider.dart';
 import 'screens/welcome_screen.dart';
+import 'screens/main_screen.dart';
+import 'screens/tasks_screen.dart';
+import 'screens/statistics_screen.dart';
 
 void main() {
   runApp(
@@ -27,7 +31,13 @@ class StudyTrackerApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const WelcomeScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const WelcomeScreen(),
+        '/home': (context) => const MainScreen(),
+        '/tasks': (context) => const TasksScreen(),
+        '/statistics': (context) => const StatisticsScreen(),
+      },
     );
   }
 }

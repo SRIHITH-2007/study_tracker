@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+
 import 'home_screen.dart';
 import 'tasks_screen.dart';
 import 'statistics_screen.dart';
@@ -11,9 +13,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int selectedIndex = 0;
+  int _selectedIndex = 0;
 
-  final List<Widget> screens = const [
+  final List<Widget> _screens = const [
     HomeScreen(),
     TasksScreen(),
     StatisticsScreen(),
@@ -22,12 +24,15 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screens[selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
+        selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
           setState(() {
-            selectedIndex = index;
+            _selectedIndex = index;
           });
         },
         destinations: const [
@@ -37,8 +42,8 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.checklist_outlined),
-            selectedIcon: Icon(Icons.checklist),
+            icon: Icon(Icons.checklist),
+            selectedIcon: Icon(Icons.checklist_rounded),
             label: 'Tasks',
           ),
           NavigationDestination(
