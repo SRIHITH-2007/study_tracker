@@ -11,6 +11,10 @@ class StatisticsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final taskProvider = context.watch<TaskProvider>();
 
+    // Experiment 3: Responsive UI using MediaQuery.
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -19,105 +23,136 @@ class StatisticsScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Your Study Statistics',
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Keep track of your study progress',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 30),
-            Row(
+        padding: EdgeInsets.all(isMobile ? 16 : 24),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1100),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.task_alt,
-                    value: '${taskProvider.totalTasks}',
-                    label: 'Total Tasks',
+                Text(
+                  'Your Study Statistics',
+                  style: TextStyle(
+                    fontSize: isMobile ? 26 : 32,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.done_all,
-                    value: '${taskProvider.completedTasks}',
-                    label: 'Completed',
+                const SizedBox(height: 8),
+                Text(
+                  'Keep track of your study progress',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: isMobile ? 15 : 17,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 15),
-            Row(
-              children: [
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.pending_actions,
-                    value: '${taskProvider.pendingTasks}',
-                    label: 'Pending',
+                const SizedBox(height: 30),
+
+                // Experiment 3: LayoutBuilder and Wrap
+                // adapt the statistics cards to available width.
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final availableWidth = constraints.maxWidth;
+                    final columns = availableWidth >= 900
+                        ? 4
+                        : availableWidth >= 500
+                            ? 2
+                            : 1;
+
+                    const spacing = 15.0;
+                    final cardWidth =
+                        (availableWidth - spacing * (columns - 1)) /
+                            columns;
+
+                    final cards = [
+                      _StatCard(
+                        icon: Icons.task_alt,
+                        value: '${taskProvider.totalTasks}',
+                        label: 'Total Tasks',
+                      ),
+                      _StatCard(
+                        icon: Icons.done_all,
+                        value: '${taskProvider.completedTasks}',
+                        label: 'Completed',
+                      ),
+                      _StatCard(
+                        icon: Icons.pending_actions,
+                        value: '${taskProvider.pendingTasks}',
+                        label: 'Pending',
+                      ),
+                      _StatCard(
+                        icon: Icons.percent,
+                        value: '${taskProvider.progressPercentage}%',
+                        label: 'Progress',
+                      ),
+                    ];
+
+                    return Wrap(
+                      spacing: spacing,
+                      runSpacing: spacing,
+                      children: cards.map((card) {
+                        return SizedBox(
+                          width: cardWidth,
+                          child: card,
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 30),
+
+                Text(
+                  'Study Overview',
+                  style: TextStyle(
+                    fontSize: isMobile ? 20 : 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.percent,
-                    value: '${taskProvider.progressPercentage}%',
-                    label: 'Progress',
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Study Overview',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 15),
-            if (taskProvider.tasks.isEmpty)
-              const Card(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Center(
-                    child: Text('No tasks available'),
-                  ),
-                ),
-              )
-            else
-              ...taskProvider.tasks.map(
-                (task) => Card(
-                  child: ListTile(
-                    leading: Icon(
-                      task.completed
-                          ? Icons.check_circle
-                          : Icons.radio_button_unchecked,
-                    ),
-                    title: Text(
-                      task.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                const SizedBox(height: 15),
+
+                if (taskProvider.tasks.isEmpty)
+                  const Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Center(
+                        child: Text('No tasks available'),
                       ),
                     ),
-                    trailing: Text(
-                      task.completed ? 'Completed' : 'Pending',
+                  )
+                else
+                  ...taskProvider.tasks.map(
+                    (task) => Card(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: ListTile(
+                        leading: Icon(
+                          task.completed
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: task.completed
+                              ? Colors.green
+                              : null,
+                        ),
+                        title: Text(
+                          task.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        trailing: Text(
+                          task.completed ? 'Completed' : 'Pending',
+                          style: TextStyle(
+                            color: task.completed
+                                ? Colors.green
+                                : Colors.orange,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -141,6 +176,7 @@ class _StatCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, size: 35),
             const SizedBox(height: 10),
@@ -151,7 +187,11 @@ class _StatCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(label),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
