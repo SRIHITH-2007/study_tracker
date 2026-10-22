@@ -59,7 +59,9 @@ class HomeScreen extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.all(20),
                   child: Center(
-                    child: Text('No tasks available. Add one from Tasks.'),
+                    child: Text(
+                      'No tasks available. Add one from Tasks.',
+                    ),
                   ),
                 ),
               )
@@ -89,12 +91,25 @@ class HomeScreen extends StatelessWidget {
                     trailing: Checkbox(
                       value: task.completed,
                       onChanged: (_) {
-                        context.read<TaskProvider>().toggleTask(index);
+                        context
+                            .read<TaskProvider>()
+                            .toggleTask(index);
                       },
                     ),
                   ),
                 );
               }),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/study-tips');
+                },
+                icon: const Icon(Icons.lightbulb_outline),
+                label: const Text('Explore Study Tips'),
+              ),
+            ),
           ],
         ),
       ),
