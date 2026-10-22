@@ -1,40 +1,22 @@
+
 import 'package:flutter/material.dart';
-import '../data/task_data.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/task_provider.dart';
 import '../widgets/progress_card.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int get completedTasks {
-    return TaskData.tasks.where((task) => task.completed).length;
-  }
-
-  int get totalTasks {
-    return TaskData.tasks.length;
-  }
-
-  int get progressPercentage {
-    if (totalTasks == 0) {
-      return 0;
-    }
-
-    return ((completedTasks / totalTasks) * 100).round();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final taskProvider = context.watch<TaskProvider>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Study Tracker',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
@@ -43,45 +25,49 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Good Evening 👋',
+              'Good Evening!',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 5),
-
             Text(
-              'Let\'s make today productive!',
+              "Let's make today productive!",
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
               ),
             ),
-
             const SizedBox(height: 25),
-
             ProgressCard(
-              percentage: progressPercentage,
-              completed: completedTasks,
-              total: totalTasks,
+              percentage: taskProvider.progressPercentage,
+              completed: taskProvider.completedTasks,
+              total: taskProvider.totalTasks,
             ),
-
             const SizedBox(height: 30),
-
             const Text(
-              'Today\'s Focus',
+              "Today's Focus",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 15),
+            if (taskProvider.tasks.isEmpty)
+              const Card(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(
+                    child: Text('No tasks available. Add one from Tasks.'),
+                  ),
+                ),
+              )
+            else
+              ...taskProvider.tasks.asMap().entries.map((entry) {
+                final index = entry.key;
+                final task = entry.value;
 
-            ...TaskData.tasks.map(
-              (task) {
                 return Card(
                   margin: const EdgeInsets.only(bottom: 10),
                   child: ListTile(
@@ -102,16 +88,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     trailing: Checkbox(
                       value: task.completed,
-                      onChanged: (value) {
-                        setState(() {
-                          task.completed = value ?? false;
-                        });
+                      onChanged: (_) {
+                        context.read<TaskProvider>().toggleTask(index);
                       },
                     ),
                   ),
                 );
-              },
-            ),
+              }),
           ],
         ),
       ),

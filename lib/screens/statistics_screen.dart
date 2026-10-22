@@ -1,29 +1,21 @@
+
 import 'package:flutter/material.dart';
-import '../data/task_data.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/task_provider.dart';
 
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final int totalTasks = TaskData.tasks.length;
-
-    final int completedTasks =
-        TaskData.tasks.where((task) => task.completed).length;
-
-    final int pendingTasks = totalTasks - completedTasks;
-
-    final int progressPercentage = totalTasks == 0
-        ? 0
-        : ((completedTasks / totalTasks) * 100).round();
+    final taskProvider = context.watch<TaskProvider>();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Statistics',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
@@ -38,9 +30,7 @@ class StatisticsScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 8),
-
             Text(
               'Keep track of your study progress',
               style: TextStyle(
@@ -48,125 +38,47 @@ class StatisticsScreen extends StatelessWidget {
                 fontSize: 16,
               ),
             ),
-
             const SizedBox(height: 30),
-
             Row(
               children: [
                 Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.task_alt,
-                            size: 35,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            '$totalTasks',
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const Text('Total Tasks'),
-                        ],
-                      ),
-                    ),
+                  child: _StatCard(
+                    icon: Icons.task_alt,
+                    value: '${taskProvider.totalTasks}',
+                    label: 'Total Tasks',
                   ),
                 ),
-
                 const SizedBox(width: 15),
-
                 Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.done_all,
-                            size: 35,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            '$completedTasks',
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const Text('Completed'),
-                        ],
-                      ),
-                    ),
+                  child: _StatCard(
+                    icon: Icons.done_all,
+                    value: '${taskProvider.completedTasks}',
+                    label: 'Completed',
                   ),
                 ),
               ],
             ),
-
             const SizedBox(height: 15),
-
             Row(
               children: [
                 Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.pending_actions,
-                            size: 35,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            '$pendingTasks',
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const Text('Pending'),
-                        ],
-                      ),
-                    ),
+                  child: _StatCard(
+                    icon: Icons.pending_actions,
+                    value: '${taskProvider.pendingTasks}',
+                    label: 'Pending',
                   ),
                 ),
-
                 const SizedBox(width: 15),
-
                 Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.percent,
-                            size: 35,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            '$progressPercentage%',
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const Text('Progress'),
-                        ],
-                      ),
-                    ),
+                  child: _StatCard(
+                    icon: Icons.percent,
+                    value: '${taskProvider.progressPercentage}%',
+                    label: 'Progress',
                   ),
                 ),
               ],
             ),
-
             const SizedBox(height: 30),
-
             const Text(
               'Study Overview',
               style: TextStyle(
@@ -174,10 +86,8 @@ class StatisticsScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 15),
-
-            if (TaskData.tasks.isEmpty)
+            if (taskProvider.tasks.isEmpty)
               const Card(
                 child: Padding(
                   padding: EdgeInsets.all(20),
@@ -187,28 +97,61 @@ class StatisticsScreen extends StatelessWidget {
                 ),
               )
             else
-              ...TaskData.tasks.map(
-                (task) {
-                  return Card(
-                    child: ListTile(
-                      leading: Icon(
-                        task.completed
-                            ? Icons.check_circle
-                            : Icons.radio_button_unchecked,
-                      ),
-                      title: Text(
-                        task.title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      trailing: Text(
-                        task.completed ? 'Completed' : 'Pending',
+              ...taskProvider.tasks.map(
+                (task) => Card(
+                  child: ListTile(
+                    leading: Icon(
+                      task.completed
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                    ),
+                    title: Text(
+                      task.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  );
-                },
+                    trailing: Text(
+                      task.completed ? 'Completed' : 'Pending',
+                    ),
+                  ),
+                ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+
+  const _StatCard({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Icon(icon, size: 35),
+            const SizedBox(height: 10),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(label),
           ],
         ),
       ),
