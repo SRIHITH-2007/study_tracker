@@ -7,44 +7,24 @@ import '../providers/task_provider.dart';
 class TasksScreen extends StatelessWidget {
   const TasksScreen({super.key});
 
-  void addTask(BuildContext context) {
-    final taskController = TextEditingController();
-
-    showDialog(
+  Future<void> _showAddTaskDialog(BuildContext context) async {
+    final title = await showDialog<String>(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Add New Task'),
-          content: TextField(
-            controller: taskController,
-            autofocus: true,
-            decoration: const InputDecoration(
-              hintText: 'Enter task name',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final title = taskController.text.trim();
+      builder: (dialogContext) => const _AddTaskDialog(),
+    );
 
-                if (title.isEmpty) {
-                  return;
-                }
+    if (title == null || !context.mounted) {
+      return;
+    }
 
-                context.read<TaskProvider>().addTask(title);
-                Navigator.pop(dialogContext);
-              },
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    ).then((_) => taskController.dispose());
+    context.read<TaskProvider>().addTask(title);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Task added successfully!'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -82,7 +62,20 @@ class TasksScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Expanded(
               child: taskProvider.tasks.isEmpty
-                  ? const Center(child: Text('No tasks yet. Add one!'))
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.checklist,
+                            size: 60,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 12),
+                          const Text('No tasks yet. Add one!'),
+                        ],
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: taskProvider.tasks.length,
                       itemBuilder: (context, index) {
@@ -129,9 +122,84 @@ class TasksScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => addTask(context),
+        onPressed: () => _showAddTaskDialog(context),
+        tooltip: 'Add task',
         child: const Icon(Icons.add),
       ),
+    );
+  }
+}
+
+class _AddTaskDialog extends StatefulWidget {
+  const _AddTaskDialog();
+
+  @override
+  State<_AddTaskDialog> createState() => _AddTaskDialogState();
+}
+
+class _AddTaskDialogState extends State<_AddTaskDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _taskController = TextEditingController();
+
+  @override
+  void dispose() {
+    _taskController.dispose();
+    super.dispose();
+  }
+
+  void _submitTask() {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+
+    // Return the value; the parent adds it after the dialog closes.
+    Navigator.of(context).pop(_taskController.text.trim());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add New Task'),
+      content: Form(
+        key: _formKey,
+        child: TextFormField(
+          controller: _taskController,
+          autofocus: true,
+          maxLength: 100,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: const InputDecoration(
+            labelText: 'Task name',
+            hintText: 'e.g. Complete Java arrays',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.edit_note),
+          ),
+          validator: (value) {
+            final title = value?.trim() ?? '';
+
+            if (title.isEmpty) {
+              return 'Please enter a task name';
+            }
+
+            if (title.length < 3) {
+              return 'Enter at least 3 characters';
+            }
+
+            return null;
+          },
+          onFieldSubmitted: (_) => _submitTask(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton.icon(
+          onPressed: _submitTask,
+          icon: const Icon(Icons.add),
+          label: const Text('Add Task'),
+        ),
+      ],
     );
   }
 }
