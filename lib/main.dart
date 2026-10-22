@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'screens/study_tips_screen.dart';
 import 'providers/task_provider.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/main_screen.dart';
@@ -37,6 +37,7 @@ class StudyTrackerApp extends StatelessWidget {
         '/home': (context) => const MainScreen(),
         '/tasks': (context) => const TasksScreen(),
         '/statistics': (context) => const StatisticsScreen(),
+        '/study-tips': (context) => const StudyTipsScreen(),
       },
     );
   }
